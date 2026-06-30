@@ -1,6 +1,9 @@
 name: build
 
-on: [push, pull_request]
+on: 
+  push:
+  pull_request:
+  workflow_dispatch: # Добавляет кнопку "Run workflow" для запуска вручную
 
 jobs:
   build-android:
@@ -9,21 +12,30 @@ jobs:
       matrix:
         build_type: [Debug, Release]
     steps:
-    - name: Checkout
+    - name: Checkout Code (Force LÖVE 11.4)
       uses: actions/checkout@v4
       with:
+        ref: '11.4' # Принудительный выбор версии LÖVE 11.4
         submodules: true
-    - name: Setup Java 17
+        fetch-depth: 0
+
+    - name: Setup Java 11
       uses: actions/setup-java@v4
       with:
         distribution: adopt-hotspot
-        java-version: 17
+        java-version: 11 # Версия 11.4 строго требует Java 11 вместо 17
         cache: gradle
+
+    - name: Download Big Game File
+      run: |
+        mkdir -p app/src/embed/assets
+        curl -L -o app/src/embed/assets/game.love "ВСТАВЬТЕ_СЮДА_ВАШУ_ССЫЛКУ"
+
     - name: Build Normal Flavor
       run: bash ./gradlew assembleNormalRecord${{ matrix.build_type }}
     - name: Build Release-specific Binaries
       if: ${{ matrix.build_type == 'Release' }}
-      run: bash ./gradlew assembleEmbedRelease bundleNormalNoRecordRelease bundleEmbedRecordRelease bundleEmbedNoRecordRelease
+      run: bash ./gradlew bundleNormalNoRecordRelease bundleEmbedRecordRelease bundleEmbedNoRecordRelease assembleEmbedNoRecordRelease
     - name: Artifact (Normal debug APK)
       if: ${{ matrix.build_type == 'Debug' }}
       uses: actions/upload-artifact@v4
@@ -54,8 +66,15 @@ jobs:
       with:
         name: love-android-embed.aab
         path: app/build/outputs/bundle/embedNoRecordRelease/app-embed-noRecord-release.aab
+    - name: Artifact (Embed Release APK)
+      if: ${{ matrix.build_type == 'Release' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: my-game-release.apk
+        path: app/build/outputs/apk/embedNoRecord/release/app-embed-noRecord-release-unsigned.apk
     - name: Artifact (Debug symbols)
       uses: actions/upload-artifact@v4
       with:
         name: love-android-unstripped-debugsyms-${{ matrix.build_type }}
-        path: love/build/intermediates/library_jni
+        path: love/build/intermediates/library_jni_
+

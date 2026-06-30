@@ -1,6 +1,9 @@
 name: build
 
-on: [push, pull_request]
+on: 
+  push:
+  pull_request:
+  workflow_dispatch: # Добавляет кнопку "Run workflow" для запуска вручную
 
 jobs:
   build-android:
@@ -29,7 +32,7 @@ jobs:
       run: bash ./gradlew assembleNormalRecord${{ matrix.build_type }}
     - name: Build Release-specific Binaries
       if: ${{ matrix.build_type == 'Release' }}
-      run: bash ./gradlew bundleNormalNoRecordRelease bundleEmbedRecordRelease bundleEmbedNoRecordRelease
+      run: bash ./gradlew bundleNormalNoRecordRelease bundleEmbedRecordRelease assembleEmbedNoRecordRelease
     - name: Artifact (Normal debug APK)
       if: ${{ matrix.build_type == 'Debug' }}
       uses: actions/upload-artifact@v4
@@ -54,14 +57,14 @@ jobs:
       with:
         name: love-android-embed-record.aab
         path: app/build/outputs/bundle/embedRecordRelease/app-embed-record-release.aab
-    - name: Artifact (Embed AAB w/o recording)
+    - name: Artifact (Embed Release APK)
       if: ${{ matrix.build_type == 'Release' }}
       uses: actions/upload-artifact@v4
       with:
-        name: love-android-embed.aab
-        path: app/build/outputs/bundle/embedNoRecordRelease/app-embed-noRecord-release.aab
+        name: my-game-release.apk
+        path: app/build/outputs/apk/embedNoRecord/release/app-embed-noRecord-release-unsigned.apk
     - name: Artifact (Debug symbols)
       uses: actions/upload-artifact@v4
       with:
         name: love-android-unstripped-debugsyms-${{ matrix.build_type }}
-        path: app/build/intermediates/cxx
+        path: app/build/intermediates/cxx_

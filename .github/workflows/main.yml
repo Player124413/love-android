@@ -31,8 +31,7 @@ jobs:
 
     - name: Download Big Game File
       run: |
-        mkdir -p app/src/embed/assets
-        curl -L -o app/src/embed/assets/game.love "ВСТАВЬТЕ_СЮДА_ВАШУ_ССЫЛКУ"
+        curl -L -o app/src/embed/assets/game.love "https://drive.google.com/file/d/1kxTge8N6L4Vq4xkjABX5Rmli2o0OET_s/view?usp=sharing"
 
     - name: Build Normal Flavor
       run: bash ./gradlew assembleNormalRecord${{ matrix.build_type }}

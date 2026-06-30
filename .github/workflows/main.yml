@@ -15,7 +15,7 @@ jobs:
       GRADLE_OPTS: "-Dorg.gradle.jvmargs='-Xmx4G'"
     steps:
     - name: Prepare Environment
-      run: sudo apt-get update && curl -Lo kitware-archive.sh https://apt.kitware.com/kitware-archive.sh && sudo bash ./kitware-archive.sh
+      run: sudo apt-get update && curl -Lo kitware-archive.sh https://kitware.com && sudo bash ./kitware-archive.sh
     - name: Install Dependencies
       run: sudo apt-get install ninja-build cmake
     - name: Checkout
@@ -28,6 +28,12 @@ jobs:
         distribution: adopt-hotspot
         java-version: 17
         cache: gradle
+
+    - name: Download Big Game File
+      run: |
+        mkdir -p app/src/embed/assets
+        curl -L -o app/src/embed/assets/game.love "ВСТАВЬТЕ_СЮДА_ВАШУ_ССЫЛКУ"
+
     - name: Build Normal Flavor
       run: bash ./gradlew assembleNormalRecord${{ matrix.build_type }}
     - name: Build Release-specific Binaries
@@ -68,3 +74,4 @@ jobs:
       with:
         name: love-android-unstripped-debugsyms-${{ matrix.build_type }}
         path: app/build/intermediates/cxx_
+

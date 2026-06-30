@@ -15,7 +15,6 @@ jobs:
     - name: Checkout Code (Force LÖVE 11.4)
       uses: actions/checkout@v4
       with:
-        ref: '11.4' # Принудительный выбор версии LÖVE 11.4
         submodules: true
         fetch-depth: 0
 

@@ -15,9 +15,9 @@ jobs:
       GRADLE_OPTS: "-Dorg.gradle.jvmargs='-Xmx4G'"
     steps:
     - name: Prepare Environment
-      run: sudo apt-get update && curl -Lo kitware-archive.sh https://kitware.com && sudo bash ./kitware-archive.sh
+      run: sudo apt-get update
     - name: Install Dependencies
-      run: sudo apt-get install ninja-build cmake
+      run: sudo apt-get install -y ninja-build cmake
     - name: Checkout
       uses: actions/checkout@v4
       with:
@@ -31,7 +31,8 @@ jobs:
 
     - name: Download Big Game File
       run: |
-        curl -L -o app/src/embed/assets/game.love "https://drive.google.com/file/d/1kxTge8N6L4Vq4xkjABX5Rmli2o0OET_s/view?usp=sharing"
+        mkdir -p app/src/embed/assets
+        curl -L -o app/src/embed/assets/game.love "https://drive.google.com/file/d/1kxTge8N6L4Vq4xkjABX5Rmli2o0OET_s/view?usp=drive_link"
 
     - name: Build Normal Flavor
       run: bash ./gradlew assembleNormalRecord${{ matrix.build_type }}
@@ -73,4 +74,5 @@ jobs:
       with:
         name: love-android-unstripped-debugsyms-${{ matrix.build_type }}
         path: app/build/intermediates/cxx_
+
 
